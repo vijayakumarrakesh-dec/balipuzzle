@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Bali 3</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+text-align:center;
+overflow:hidden;
+}
+
+h1{
+margin-top:40px;
+}
+
+button{
+padding:12px 30px;
+font-size:18px;
+border:none;
+border-radius:8px;
+background:#ffcc00;
+cursor:pointer;
+margin-top:25px;
+}
+
+#intro{
+margin-top:80px;
+width:80%;
+max-width:700px;
+margin-left:auto;
+margin-right:auto;
+line-height:1.6;
+}
+
+#gameCard{
+display:none;
+background:white;
+color:black;
+width:80%;
+max-width:650px;
+margin:auto;
+padding:30px;
+border-radius:15px;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+margin-top:40px;
+}
+
+.row{
+margin:10px;
+}
+
+.tile{
+display:inline-block;
+width:38px;
+height:38px;
+line-height:38px;
+margin:3px;
+background:#f1f1f1;
+border-radius:6px;
+font-weight:bold;
+cursor:pointer;
+transition:0.2s;
+}
+
+.tile:hover{
+background:#ffd54f;
+transform:scale(1.1);
+}
+
+.row.correct{
+background:#d4edda;
+border-radius:6px;
+}
+
+.row.hide{
+animation:fade 0.7s forwards;
+}
+
+@keyframes fade{
+to{
+opacity:0;
+transform:scale(0);
+}
+}
+
+#final{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:none;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+}
+
+#bg{
+position:absolute;
+width:100%;
+height:100%;
+object-fit:cover;
+opacity:0;
+transform:scale(1.2);
+transition:2s;
+}
+
+#message{
+font-size:70px;
+font-weight:bold;
+letter-spacing:6px;
+z-index:2;
+text-shadow:3px 3px 20px black;
+}
+
+.float{
+position:absolute;
+font-size:20px;
+font-weight:bold;
+animation:floatUp 6s linear infinite;
+color:white;
+text-shadow:2px 2px 10px black;
+}
+
+@keyframes floatUp{
+0%{
+transform:translateY(100px);
+opacity:0;
+}
+20%{
+opacity:1;
+}
+100%{
+transform:translateY(-300px);
+opacity:0;
+}
+}
+
+.petal{
+position:absolute;
+font-size:24px;
+animation:petalFall 4s linear forwards;
+}
+
+@keyframes petalFall{
+0%{
+transform:translateY(-50px) rotate(0deg);
+opacity:1;
+}
+100%{
+transform:translateY(500px) rotate(360deg);
+opacity:0;
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="intro">
+
+<h1>BALI TOURISM ADVISORY</h1>
+
+<p>
+Authorities across Bali have reported a <b>beautiful storm named Sneha</b>
+sweeping across the island since yesterday.
+</p>
+
+<p>
+Since then, a few words have been trending everywhere.
+</p>
+
+<p>
+They are hidden in each row below.
+Find the word in every row and <b>click the first letter</b>.
+</p>
+
+<p>
+Each correct selection will make the row disappear.
+Complete all rows and wait for the surprise.
+</p>
+
+<button onclick="startGame()">Start Puzzle</button>
+
+</div>
+
+
+<div id="gameCard">
+
+<div id="grid"></div>
+
+</div>
+
+
+<div id="final">
+
+<img id="bg" src="bali3.jpg">
+
+<div id="message">
+SNEHA<br>
+RULES<br>
+BALI
+</div>
+
+</div>
+
+
+<script>
+
+const rows=[
+{letters:"AFDSTUNNINGFD",word:"STUNNING"},
+{letters:"XKQBEAUTIFULPL",word:"BEAUTIFUL"},
+{letters:"MNBFANTABULOUSX",word:"FANTABULOUS"},
+{letters:"TRQBLOOMINGFD",word:"BLOOMING"},
+{letters:"WQADORABLEPL",word:"ADORABLE"},
+{letters:"ZKMAGICALTR",word:"MAGICAL"},
+{letters:"LPANGELICFD",word:"ANGELIC"},
+{letters:"VTRADIANTMK",word:"RADIANT"}
+]
+
+const reactions=[
+"Stunning 🔥",
+"Magical Bali ✨",
+"Angel in Bali 😍",
+"Queen of Bali 👑",
+"Island glow 🌴",
+"Bali never looked better",
+"She lit up the island"
+]
+
+let rowsLeft=rows.length
+
+const grid=document.getElementById("grid")
+
+rows.forEach(r=>{
+
+let row=document.createElement("div")
+row.className="row"
+
+r.letters.split("").forEach(letter=>{
+
+let tile=document.createElement("div")
+tile.className="tile"
+tile.innerText=letter
+
+tile.onclick=()=>select(tile,row,r.word)
+
+row.appendChild(tile)
+
+})
+
+grid.appendChild(row)
+
+})
+
+function startGame(){
+
+document.getElementById("intro").style.display="none"
+document.getElementById("gameCard").style.display="block"
+
+}
+
+function select(tile,row,word){
+
+if(tile.innerText===word[0]){
+
+row.classList.add("correct")
+
+petalBurst(tile)
+
+setTimeout(()=>{
+row.classList.add("hide")
+},400)
+
+rowsLeft--
+
+if(rowsLeft===0){
+
+setTimeout(showFinal,900)
+
+}
+
+}
+
+}
+
+function petalBurst(tile){
+
+for(let i=0;i<12;i++){
+
+let p=document.createElement("div")
+p.className="petal"
+p.innerHTML="🌺"
+
+p.style.left=tile.getBoundingClientRect().left+"px"
+p.style.top=tile.getBoundingClientRect().top+"px"
+
+document.body.appendChild(p)
+
+setTimeout(()=>p.remove(),4000)
+
+}
+
+}
+
+function showFinal(){
+
+document.getElementById("gameCard").style.display="none"
+
+document.getElementById("final").style.display="flex"
+
+setTimeout(()=>{
+let bg=document.getElementById("bg")
+bg.style.opacity="1"
+bg.style.transform="scale(1)"
+},300)
+
+floatingText()
+
+}
+
+function floatingText(){
+
+setInterval(()=>{
+
+let t=document.createElement("div")
+
+t.className="float"
+t.innerText=reactions[Math.floor(Math.random()*reactions.length)]
+
+t.style.left=Math.random()*80+"%"
+
+document.body.appendChild(t)
+
+setTimeout(()=>t.remove(),6000)
+
+},800)
+
+}
+
+</script>
+
+</body>
+</html>
